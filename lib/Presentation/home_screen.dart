@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ucne_guide/Presentation/consulta_asignatura_screen.dart';
+import 'package:ucne_guide/Presentation/consulta_maestro_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,8 +27,18 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            _buildCard("Consulta de Asignuras", (){}),
-            _buildCard("Consulta de Maestros", (){}),
+            _buildCard("Consulta de Asignuras", (){
+              Navigator.push(
+               context,
+                MaterialPageRoute(builder: (context) => ConsultaAsignaturaScreen())
+              );
+            }),
+            _buildCard("Consulta de Maestros", (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ConsultaMaestroScreen())
+              );
+            }),
             _buildCard("Calificar Maestro", (){})
           ],
         ),
