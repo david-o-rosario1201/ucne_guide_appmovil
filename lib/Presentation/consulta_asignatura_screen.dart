@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ucne_guide/Presentation/drawer_menu.dart';
 
 class ConsultaAsignaturaScreen extends StatefulWidget {
   const ConsultaAsignaturaScreen({super.key});
@@ -10,16 +11,8 @@ class ConsultaAsignaturaScreen extends StatefulWidget {
 class _ConsultaAsignaturaScreenState extends State<ConsultaAsignaturaScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Consulta de Asignaturas",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        backgroundColor: Color(0xFFB0263F),
-        foregroundColor: Colors.white,
-      ),
+    return DrawerMenu(
+      title: "Consulta de Asignaturas",
       body: Padding(
         padding: EdgeInsets.all(8.0),
         child: Column(
@@ -54,9 +47,9 @@ class _ConsultaAsignaturaScreenState extends State<ConsultaAsignaturaScreen> {
                     margin: EdgeInsets.symmetric(vertical: 5),
                     child: ListTile(
                       title: Text(
-                          "Asignatura ${index + 1}",
+                        "Asignatura ${index + 1}",
                         style: TextStyle(
-                          fontWeight: FontWeight.bold
+                            fontWeight: FontWeight.bold
                         ),
                       ),
                       subtitle: Text("Facultad de Ingeniería"),
@@ -71,7 +64,7 @@ class _ConsultaAsignaturaScreenState extends State<ConsultaAsignaturaScreen> {
                         child: Text(
                           "Ver",
                           style: TextStyle(
-                            color: Colors.white
+                              color: Colors.white
                           ),
                         ),
                       ),
