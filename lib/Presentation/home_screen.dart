@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ucne_guide/Presentation/consulta_asignatura_screen.dart';
 import 'package:ucne_guide/Presentation/consulta_maestro_screen.dart';
+import 'package:ucne_guide/Presentation/drawer_menu.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,34 +13,26 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "HomeScreen",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        backgroundColor: Color(0xFFB0263F),
-        foregroundColor: Colors.white
-      ),
+    return DrawerMenu(
+      title: "HomeScreen",
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            _buildCard("Consulta de Asignuras", (){
-              Navigator.push(
-               context,
-                MaterialPageRoute(builder: (context) => ConsultaAsignaturaScreen())
-              );
-            }),
-            _buildCard("Consulta de Maestros", (){
+            _buildCard("Consulta de Asignaturas", () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ConsultaMaestroScreen())
+                MaterialPageRoute(builder: (context) => ConsultaAsignaturaScreen()),
               );
             }),
-            _buildCard("Calificar Maestro", (){})
+            _buildCard("Consulta de Maestros", () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ConsultaMaestroScreen()),
+              );
+            }),
+            _buildCard("Calificar Maestro", () {})
           ],
         ),
       ),
@@ -47,13 +40,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-Widget _buildCard(String text, VoidCallback onTap){
+Widget _buildCard(String text, VoidCallback onTap) {
   return Card(
     color: Color(0xFFD1CCB6),
     margin: EdgeInsets.symmetric(vertical: 10),
     elevation: 4,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10)
+      borderRadius: BorderRadius.circular(10),
     ),
     child: InkWell(
       onTap: onTap,
