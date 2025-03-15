@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ucne_guide/Presentation/drawer_menu.dart';
 
 class ConsultaMaestroScreen extends StatefulWidget {
   const ConsultaMaestroScreen({super.key});
@@ -10,16 +11,8 @@ class ConsultaMaestroScreen extends StatefulWidget {
 class _ConsultaMaestroScreenState extends State<ConsultaMaestroScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Consulta de Maestros",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        backgroundColor: Color(0xFFB0263F),
-        foregroundColor: Colors.white,
-      ),
+    return DrawerMenu(
+      title: "Consulta de Maestros",
       body: Padding(
         padding: EdgeInsets.all(8.0),
         child: Column(
