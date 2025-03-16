@@ -1,6 +1,8 @@
+import 'dart:convert';
+
 class Facultad{
-  final facultadId;
-  final nombre;
+  final int facultadId;
+  final String nombre;
 
   Facultad({
     required this.facultadId,
@@ -9,14 +11,14 @@ class Facultad{
 
   factory Facultad.fromJson(Map<String, dynamic> json) {
     return Facultad(
-        facultadId: json['facultadId'],
-        nombre: json['nombre'] ?? "Sin nombre"
+        facultadId: json['facultadid'],
+        nombre: utf8.decode(json['nombre'].toString().codeUnits)
     );
   }
 
   Map<String, dynamic> toJson(){
     return {
-      'facultadId': facultadId,
+      'facultadid': facultadId,
       'nombre': nombre
     };
   }
