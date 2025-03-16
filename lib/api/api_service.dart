@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:ucne_guide/Modelos/facultad.dart';
+import 'package:ucne_guide/Modelos/maestros.dart';
 import 'package:ucne_guide/Modelos/materias.dart';
 
 class Api_Service{
@@ -102,6 +103,53 @@ class Api_Service{
       return Facultad.fromJson(json.decode(endpoint.body));
     } else {
       throw Exception("Error al crear la materia");
+    }
+  }
+
+  //facultad_materia
+  Future<String> getMateriaDeMaestro(Maestros maestro) async {
+    final materia = await getMateria(maestro.maestroId);
+    return materia.nombre;
+  }
+
+  //maestros
+  Future<Maestros> getMaestro(int maestroId) async{
+    final endpoint = await http.get(Uri.parse('$baseUrl/maestros/$maestroId'));
+
+    if(endpoint.statusCode == 200){
+      final List<dynamic> data = json.decode(endpoint.body);
+      return Maestros.fromJson(data[0]);
+    } else{
+      throw Exception("Error al cargar el maestro");
+    }
+  }
+
+  Future<List<Maestros>> getMaestros() async{
+    final endpoint = await http.get(Uri.parse('$baseUrl/maestros'));
+
+    if(endpoint.statusCode == 200){
+      List<dynamic> data = json.decode(endpoint.body);
+      return data.map((json) => Maestros.fromJson(json)).toList();
+    } else{
+      throw Exception("Error al cargar los maestros");
+    }
+  }
+
+  Future<Maestros> createMaestro(Maestros maestro) async{
+    final endpoint = await http.post(
+        Uri.parse('$baseUrl/facultad?nombre='),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          'maestroid': maestro.maestroId,
+          'nombre': maestro.nombre,
+          'materiaid': maestro.materiaId,
+        })
+    );
+
+    if (endpoint.statusCode == 201) {
+      return Maestros.fromJson(json.decode(endpoint.body));
+    } else {
+      throw Exception("Error al crear al maestro");
     }
   }
 }
