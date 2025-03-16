@@ -25,7 +25,7 @@ class _ConsultaAsignaturaScreenState extends State<ConsultaAsignaturaScreen> {
   @override
   Widget build(BuildContext context) {
     return DrawerMenu(
-      title: "Consulta de Asignaturas",
+      title: "Consulta de Materias",
       body: Padding(
         padding: EdgeInsets.all(8.0),
         child: Column(
@@ -44,7 +44,7 @@ class _ConsultaAsignaturaScreenState extends State<ConsultaAsignaturaScreen> {
                   Expanded(
                     child: TextField(
                       decoration: InputDecoration(
-                        hintText: "Buscar asignatura",
+                        hintText: "Buscar materia",
                         border: InputBorder.none,
                       ),
                       onChanged: (value) {
@@ -86,7 +86,12 @@ class _ConsultaAsignaturaScreenState extends State<ConsultaAsignaturaScreen> {
                               materia.nombre,
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            subtitle: Text("Facultad ID: ${materia.facultadId}"),
+                            subtitle: FutureBuilder<String>(
+                              future: apiService.getFacultadDeMateria(materia),
+                              builder: (context, snapshot) {
+                                return Text("Facultad: ${snapshot.data}");
+                              },
+                            ),
                             trailing: ElevatedButton(
                               onPressed: () {
                                 Navigator.push(
