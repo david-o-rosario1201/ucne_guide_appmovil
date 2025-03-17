@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ucne_guide/Presentation/aboutus_screen.dart';
 import 'package:ucne_guide/Presentation/consulta_asignatura_screen.dart';
 import 'package:ucne_guide/Presentation/consulta_maestro_screen.dart';
 import 'package:ucne_guide/Presentation/home_screen.dart';
@@ -101,7 +102,7 @@ class CustomDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => ConsultaAsignaturaScreen()),
+                MaterialPageRoute(builder: (context) => AboutusScreen()),
               );
             },
           ),
