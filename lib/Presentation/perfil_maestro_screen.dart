@@ -26,8 +26,16 @@ class _PerfilMaestroScreenState extends State<PerfilMaestroScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DrawerMenu(
-      title: "Perfil de Maestro",
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Perfil de Maestro",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Color(0xFFB0263F),
+        foregroundColor: Colors.white,
+        centerTitle: true,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: FutureBuilder<Maestros>(
