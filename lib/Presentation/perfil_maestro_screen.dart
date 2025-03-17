@@ -63,6 +63,18 @@ class _PerfilMaestroScreenState extends State<PerfilMaestroScreen> {
                       }
                     },
                   ),
+                  FutureBuilder<String>(
+                    future: apiService.getFacultadMaestro(maestro.materiaId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        return ProfileField(label: "Facultad", value: snapshot.data ?? "Desconocido");
+                      }
+                    },
+                  ),
                 ],
               );
             }
