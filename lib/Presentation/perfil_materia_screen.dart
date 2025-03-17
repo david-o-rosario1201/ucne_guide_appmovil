@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ucne_guide/Modelos/maestros.dart';
 import 'package:ucne_guide/Modelos/materias.dart';
 import 'package:ucne_guide/api/api_service.dart';
-
-import 'drawer_menu.dart';
 
 class PerfilMateriaScreen extends StatefulWidget {
   final int materiaId;
@@ -26,8 +25,16 @@ class _PerfilMateriaScreenState extends State<PerfilMateriaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DrawerMenu(
-      title: "Perfil de Materia",
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Perfil de Materia",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Color(0xFFB0263F),
+        foregroundColor: Colors.white,
+        centerTitle: true,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: FutureBuilder<Materias>(
@@ -63,7 +70,21 @@ class _PerfilMateriaScreenState extends State<PerfilMateriaScreen> {
                       }
                     },
                   ),
-                  ProfileField(label: "Código de Materia", value: materia.codigoMateria)
+                  ProfileField(label: "Código de Materia", value: materia.codigoMateria),
+                  FutureBuilder<List<Maestros>>(
+                    future: apiService.getMaestrosMateria(materia.materiaId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text("Error: ${snapshot.error}"));
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Center(child: Text("No hay docentes disponibles"));
+                      } else {
+                        return TablaMaestros(maestros: snapshot.data!);
+                      }
+                    },
+                  )
                 ],
               );
             }
@@ -100,6 +121,65 @@ class ProfileField extends StatelessWidget {
           child: Text(value, style: const TextStyle(fontSize: 16)),
         ),
         const SizedBox(height: 15),
+      ],
+    );
+  }
+}
+
+class TablaMaestros extends StatelessWidget {
+  final List<Maestros> maestros;
+
+  const TablaMaestros({super.key, required this.maestros});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 8.0),
+          child: Text(
+            "Docentes que la imparten",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Table(
+          border: TableBorder.all(color: Colors.black),
+          columnWidths: const {
+            0: FlexColumnWidth(1),
+            1: FlexColumnWidth(3),
+          },
+          children: [
+            // Encabezados de la tabla
+            const TableRow(
+              decoration: BoxDecoration(color: Colors.grey),
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    "Docentes",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+            // Filas dinámicas con los maestros
+            ...maestros.map(
+                  (maestro) => TableRow(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      maestro.nombre, // Nombre del maestro
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
