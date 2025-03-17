@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            _buildCard("Consulta de Asignaturas", () {
+            _buildCard("Consulta de Materias", () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ConsultaAsignaturaScreen()),

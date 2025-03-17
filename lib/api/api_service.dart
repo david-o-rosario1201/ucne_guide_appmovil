@@ -112,6 +112,13 @@ class Api_Service{
     return materia.nombre;
   }
 
+  //facultad_maestro
+  Future<String> getFacultadMaestro(int materiaId) async {
+    final materia = await getMateria(materiaId);
+    final facultad = await getFacultad(materia.facultadId);
+    return facultad.nombre;
+  }
+
   //maestros
   Future<Maestros> getMaestro(int maestroId) async{
     final endpoint = await http.get(Uri.parse('$baseUrl/maestros/$maestroId'));
@@ -151,5 +158,12 @@ class Api_Service{
     } else {
       throw Exception("Error al crear al maestro");
     }
+  }
+
+  //maestros_materia
+  Future<List<Maestros>> getMaestrosMateria(int materiaId) async{
+    final maestros = await getMaestros();
+    final maestrosMateria = maestros.where((maestro) => maestro.materiaId == materiaId).toList();
+    return maestrosMateria;
   }
 }

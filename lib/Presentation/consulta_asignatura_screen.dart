@@ -105,10 +105,10 @@ class _ConsultaAsignaturaScreenState extends State<ConsultaAsignaturaScreen> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
-                              child: Text(
-                                "Ver",
-                                style: TextStyle(color: Colors.white),
-                              ),
+                              child: Icon(
+                                Icons.remove_red_eye_outlined,
+                                color: Colors.white,
+                              )
                             ),
                           ),
                         );

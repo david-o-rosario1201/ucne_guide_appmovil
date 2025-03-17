@@ -107,10 +107,10 @@ class _ConsultaMaestroScreenState extends State<ConsultaMaestroScreen> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
-                              child: Text(
-                                "Ver",
-                                style: TextStyle(color: Colors.white),
-                              ),
+                              child: Icon(
+                                Icons.remove_red_eye_outlined,
+                                color: Colors.white,
+                              )
                             ),
                           ),
                         );
