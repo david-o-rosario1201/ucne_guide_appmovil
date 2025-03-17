@@ -57,7 +57,7 @@ class CustomDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.school, color: Colors.black),
-            title: Text("Consulta de Asignaturas"),
+            title: Text("Consulta de Materias"),
             onTap: () {
               Navigator.pushReplacement(
                 context,
