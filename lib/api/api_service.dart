@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:ucne_guide/Modelos/estudiantes.dart';
 import 'package:ucne_guide/Modelos/facultad.dart';
 import 'package:ucne_guide/Modelos/maestros.dart';
 import 'package:ucne_guide/Modelos/materias.dart';
@@ -165,5 +166,82 @@ class Api_Service{
     final maestros = await getMaestros();
     final maestrosMateria = maestros.where((maestro) => maestro.materiaId == materiaId).toList();
     return maestrosMateria;
+  }
+
+  //estudiantes
+  Future<Estudiantes> getEstudiante(int estudianteId) async{
+    final endpoint = await http.get(Uri.parse('$baseUrl/estudiantes/$estudianteId'));
+
+    if(endpoint.statusCode == 200){
+      final List<dynamic> data = json.decode(endpoint.body);
+      return Estudiantes.fromJson(data[0]);
+    } else{
+      throw Exception("Error al cargar el estudiante");
+    }
+  }
+
+  Future<List<Estudiantes>> getEstudiantes() async{
+    final endpoint = await http.get(Uri.parse('$baseUrl/estudiantes'));
+
+    if(endpoint.statusCode == 200){
+      List<dynamic> data = json.decode(endpoint.body);
+      return data.map((json) => Estudiantes.fromJson(json)).toList();
+    } else{
+      throw Exception("Error al cargar los estudiantes");
+    }
+  }
+
+  Future<Estudiantes> createEstudiante(Estudiantes estudiante) async{
+    final endpoint = await http.post(
+        Uri.parse('$baseUrl/estudiantes?nombre=${estudiante.nombre}&carreraid=${estudiante.carreraid}&matricula=${estudiante.matricula}'),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          'estudianteid': estudiante.estudianteid,
+          'nombre': estudiante.nombre,
+          'carreraid': estudiante.carreraid,
+          'matricula': estudiante.matricula
+        })
+    );
+
+    if (endpoint.statusCode >= 200 && endpoint.statusCode < 300) {
+      return Estudiantes.fromJson(json.decode(endpoint.body));
+    } else {
+      throw Exception("Error al crear al estudiante: ${endpoint.body}");
+    }
+  }
+
+  //Buscar nombre estudiante
+  Future<String?> getEstudiantePorNombre(String nombre) async {
+    final estudiantes = await getEstudiantes();
+    final estudiante = estudiantes.firstWhere(
+          (estudiante) => estudiante.nombre.toLowerCase() == nombre.toLowerCase(),
+      orElse: () => Estudiantes(estudianteid: 0, nombre: '', carreraid: 0, matricula: ''),
+    );
+
+    return estudiante.nombre.isNotEmpty ? estudiante.nombre : null;
+  }
+
+
+
+  //Buscar matricula estudiante
+  Future<String?> getEstudiantePorMatricula(String matricula) async {
+    final estudiantes = await getEstudiantes();
+    final estudiante = estudiantes.firstWhere(
+          (estudiante) => estudiante.matricula == matricula,
+      orElse: () => Estudiantes(estudianteid: 0, nombre: '', carreraid: 0, matricula: ''),
+    );
+
+    return estudiante.matricula.isNotEmpty ? estudiante.matricula : null;
+  }
+
+  //user and password correctas
+  Future<bool> isUserAndPasswordCorrect(String nombre, String matricula) async {
+    final estudiantes = await getEstudiantes();
+    final estudiante = estudiantes.firstWhere(
+          (estudiante) => estudiante.matricula == matricula && estudiante.nombre == nombre,
+      orElse: () => Estudiantes(estudianteid: 0, nombre: '', carreraid: 0, matricula: ''),
+    );
+
+    return estudiante.matricula.isNotEmpty ? true : false;
   }
 }
