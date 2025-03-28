@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:ucne_guide/Modelos/comentarios.dart';
 import 'package:ucne_guide/Modelos/maestros.dart';
 import 'package:ucne_guide/Modelos/materias.dart';
 import 'package:ucne_guide/api/api_service.dart';
+
+import '../Modelos/estudiantes.dart';
+import '../SharedPreferences/sharedPreferencesService.dart';
 
 class PerfilMateriaScreen extends StatefulWidget {
   final int materiaId;
@@ -13,14 +17,72 @@ class PerfilMateriaScreen extends StatefulWidget {
 }
 
 class _PerfilMateriaScreenState extends State<PerfilMateriaScreen> {
-
   final Api_Service apiService = Api_Service();
-  late Future futureMateria;
+  List<Comentarios> comentariosList = [];
+
+  final SharedPreferencesService _prefsService = SharedPreferencesService();
+  String? estudianteNombre = "";
+  late Estudiantes estudiante;
+  final TextEditingController controller = TextEditingController();
 
   @override
   void initState(){
     super.initState();
-    futureMateria = apiService.getMateria(widget.materiaId);
+    _loadComentarios(); // Carga inicial de comentarios
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    String username = await _prefsService.loadUsername();
+    setState(() {
+      estudianteNombre = username;
+    });
+    estudiante = await apiService.getEstudiantePorNombre(estudianteNombre ?? "");
+  }
+
+  Future<void> _loadComentarios() async {
+    try {
+      final comentarios = await apiService.getComentariosPorMateria(widget.materiaId);
+
+      setState(() {
+        comentariosList.clear();
+        comentariosList.addAll(comentarios);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al cargar los comentarios')),
+      );
+    }
+  }
+
+  void createComentario() async {
+    final contenido = controller.text;
+
+    if (contenido.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Debe escribir un comentario')),
+      );
+      return;
+    }
+
+    final nuevoComentario = Comentarios(
+        comentarioid: 0,
+        materiaid: widget.materiaId,
+        estudianteid: estudiante.estudianteid ?? 0,
+        contenido: contenido
+    );
+
+    //Actualiza la UI
+    setState(() {
+      comentariosList.add(nuevoComentario);
+    });
+
+    controller.clear();
+    await apiService.createComentario(nuevoComentario);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Comentario creado con éxito')),
+    );
   }
 
   @override
@@ -35,61 +97,171 @@ class _PerfilMateriaScreenState extends State<PerfilMateriaScreen> {
         foregroundColor: Colors.white,
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: FutureBuilder<Materias>(
-          future: apiService.getMateria(widget.materiaId),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData) {
-              return const Center(child: Text('No data available.'));
-            } else {
-              final materia = snapshot.data!;  // Unwrap the data
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: FutureBuilder<Materias>(
+              future: apiService.getMateria(widget.materiaId),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData) {
+                  return const Center(child: Text('No data available.'));
+                } else {
+                  final materia = snapshot.data!;
 
-              return Column(
-                children: [
-                  const SizedBox(height: 20),
-                  Image(
-                    image: AssetImage('assets/libros.png'),
-                    width: 100,
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.only(bottom: 80), // Espacio para la barra de comentarios
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        Image(
+                          image: AssetImage('assets/libros.png'),
+                          width: 100,
+                        ),
+                        const SizedBox(height: 20),
+                        ProfileField(label: "Materia", value: materia.nombre),
+                        FutureBuilder<String>( // Mostrando Facultad
+                          future: apiService.getFacultadDeMateria(materia),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              return ProfileField(label: "Facultad", value: snapshot.data ?? "Desconocido");
+                            }
+                          },
+                        ),
+                        ProfileField(label: "Código de Materia", value: materia.codigoMateria),
+                        FutureBuilder<List<Maestros>>(
+                          future: apiService.getMaestrosMateria(materia.materiaId),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Center(child: Text("Error: ${snapshot.error}"));
+                            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                              return const Center(child: Text("No hay docentes disponibles"));
+                            } else {
+                              return TablaMaestros(maestros: snapshot.data!);
+                            }
+                          },
+                        ),
+                        // Mostrar comentarios usando ListView.builder
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: comentariosList.length,
+                          itemBuilder: (context, index) {
+                            final comentario = comentariosList[index];
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  FutureBuilder<Estudiantes>(
+                                    future: apiService.getEstudiante(comentario.estudianteid),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return const CircularProgressIndicator();
+                                      } else if (snapshot.hasError) {
+                                        return const Text("Error");
+                                      } else {
+                                        final estudiante = snapshot.data!;
+                                        return CircleAvatar(
+                                          backgroundColor: Colors.blueAccent,
+                                          child: Text(
+                                            estudiante.nombre[0], // Inicial del nombre
+                                            style: const TextStyle(color: Colors.white),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        FutureBuilder<Estudiantes>(
+                                          future: apiService.getEstudiante(comentario.estudianteid),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState == ConnectionState.waiting) {
+                                              return const Text("Cargando...");
+                                            } else if (snapshot.hasError) {
+                                              return const Text("Error al cargar el estudiante");
+                                            } else {
+                                              return Text(
+                                                snapshot.data!.nombre,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              );
+                                            }
+                                          },
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          '"${comentario.contenido}"',
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            fontStyle: FontStyle.italic,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
+          /// Barra fija en la parte inferior
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              color: Colors.white,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextField(
+                      controller: controller,
+                      decoration: InputDecoration(
+                        hintText: "Agrega un comentario...",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 20),
-                  ProfileField(label: "Materia", value: materia.nombre),
-                  FutureBuilder<String>(
-                    future: apiService.getFacultadDeMateria(materia),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else {
-                        return ProfileField(label: "Facultad", value: snapshot.data ?? "Desconocido");
-                      }
-                    },
-                  ),
-                  ProfileField(label: "Código de Materia", value: materia.codigoMateria),
-                  FutureBuilder<List<Maestros>>(
-                    future: apiService.getMaestrosMateria(materia.materiaId),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text("Error: ${snapshot.error}"));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Center(child: Text("No hay docentes disponibles"));
-                      } else {
-                        return TablaMaestros(maestros: snapshot.data!);
-                      }
+                  IconButton(
+                    icon: const Icon(Icons.send, color: Colors.blue),
+                    onPressed: () {
+                      createComentario();
                     },
                   )
                 ],
-              );
-            }
-          },
-        ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -126,6 +298,7 @@ class ProfileField extends StatelessWidget {
   }
 }
 
+
 class TablaMaestros extends StatelessWidget {
   final List<Maestros> maestros;
 
@@ -136,49 +309,62 @@ class TablaMaestros extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8.0),
-          child: Text(
-            "Docentes que la imparten",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12), // Bordes redondeados
+            color: Colors.white, // Fondo de la tabla
           ),
-        ),
-        Table(
-          border: TableBorder.all(color: Colors.black),
-          columnWidths: const {
-            0: FlexColumnWidth(1),
-            1: FlexColumnWidth(3),
-          },
-          children: [
-            // Encabezados de la tabla
-            const TableRow(
-              decoration: BoxDecoration(color: Colors.grey),
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    "Docentes",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
+          clipBehavior: Clip.hardEdge, // Recorta el contenido para respetar el borderRadius
+          child: Table(
+            columnWidths: const {
+              0: FlexColumnWidth(1),
+              1: FlexColumnWidth(3),
+            },
+            children: [
+              // Encabezado con esquinas redondeadas en la parte superior
+              TableRow(
+                decoration: BoxDecoration(
+                  color: Colors.blueAccent,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
                   ),
                 ),
-              ],
-            ),
-            // Filas dinámicas con los maestros
-            ...maestros.map(
-                  (maestro) => TableRow(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(12.0),
                     child: Text(
-                      maestro.nombre, // Nombre del maestro
+                      "Docentes",
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                       textAlign: TextAlign.center,
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
+              // Filas dinámicas con colores alternos
+              ...maestros.asMap().entries.map(
+                    (entry) {
+                  int index = entry.key;
+                  Maestros maestro = entry.value;
+                  return TableRow(
+                    decoration: BoxDecoration(
+                      color: index.isEven ? Colors.grey.shade200 : Colors.white,
+                    ),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Text(
+                          maestro.nombre,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ],
     );
