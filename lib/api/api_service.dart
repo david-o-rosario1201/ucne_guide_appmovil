@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:ucne_guide/Modelos/comentarios.dart';
 import 'package:ucne_guide/Modelos/estudiantes.dart';
 import 'package:ucne_guide/Modelos/facultad.dart';
 import 'package:ucne_guide/Modelos/maestros.dart';
@@ -211,14 +212,14 @@ class Api_Service{
   }
 
   //Buscar nombre estudiante
-  Future<String?> getEstudiantePorNombre(String nombre) async {
+  Future<Estudiantes> getEstudiantePorNombre(String nombre) async {
     final estudiantes = await getEstudiantes();
     final estudiante = estudiantes.firstWhere(
           (estudiante) => estudiante.nombre.toLowerCase() == nombre.toLowerCase(),
       orElse: () => Estudiantes(estudianteid: 0, nombre: '', carreraid: 0, matricula: ''),
     );
 
-    return estudiante.nombre.isNotEmpty ? estudiante.nombre : null;
+    return estudiante;
   }
 
 
@@ -243,5 +244,54 @@ class Api_Service{
     );
 
     return estudiante.matricula.isNotEmpty ? true : false;
+  }
+
+  //Comentarios
+  Future<List<Comentarios>> getComentariosPorEstudianteYMateria(int estudianteId, int materiaId) async{
+    final endpoint = await http.get(Uri.parse('$baseUrl/comentarios/$estudianteId/$materiaId'));
+
+    if(endpoint.statusCode == 200){
+      List<dynamic> data = json.decode(endpoint.body);
+      return data.map((json) => Comentarios.fromJson(json)).toList();
+    } else{
+      throw Exception("Error al cargar los comentarios");
+    }
+  }
+
+  Future<List<Comentarios>> getComentarios() async{
+    final endpoint = await http.get(Uri.parse('$baseUrl/comentarios'));
+
+    if(endpoint.statusCode == 200){
+      List<dynamic> data = json.decode(endpoint.body);
+      return data.map((json) => Comentarios.fromJson(json)).toList();
+    } else{
+      throw Exception("Error al cargar los comentarios");
+    }
+  }
+
+  Future<Comentarios> createComentario(Comentarios comentario) async{
+    final endpoint = await http.post(
+        Uri.parse('$baseUrl/comentarios?materiaid=${comentario.materiaid}&estudianteid=${comentario.estudianteid}&contenido=${comentario.contenido}'),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          'comentarioid': comentario.comentarioid,
+          'materiaid': comentario.materiaid,
+          'estudianteid': comentario.estudianteid,
+          'contenido': comentario.contenido
+        })
+    );
+
+    if (endpoint.statusCode >= 200 && endpoint.statusCode < 300) {
+      return Comentarios.fromJson(json.decode(endpoint.body));
+    } else {
+      throw Exception("Error al crear el comentario: ${endpoint.body}");
+    }
+  }
+
+  //getcomentarios por materia
+  Future<List<Comentarios>> getComentariosPorMateria(int materiaId) async{
+    final comentarios = await getComentarios();
+    final comentariosFiltrados = comentarios.where((comentario) => comentario.materiaid == materiaId).toList();
+    return comentariosFiltrados;
   }
 }
