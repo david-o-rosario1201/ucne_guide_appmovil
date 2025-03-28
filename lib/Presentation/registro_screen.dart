@@ -45,10 +45,10 @@ class _RegistroScreenState extends State<RegistroScreen> {
       return;
     }
 
-    String? nombreEstudianteBuscado = await apiService.getEstudiantePorNombre(nombre);
+    Estudiantes? nombreEstudianteBuscado = await apiService.getEstudiantePorNombre(nombre);
     String? matriculaEstudianteBuscado = await apiService.getEstudiantePorMatricula(matricula);
 
-    if (nombreEstudianteBuscado == nombre) {
+    if (nombreEstudianteBuscado.nombre == nombre) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Ya existe un estudiante con ese nombre')),
       );
