@@ -104,7 +104,7 @@ class _InicioSesionScreenState extends State<InicioSesionScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    "¿Ya tienes una cuenta?",
+                    "¿Aún no tienes una cuenta?",
                     style: TextStyle(color: Colors.black, fontSize: 14),
                   ),
 
@@ -116,7 +116,7 @@ class _InicioSesionScreenState extends State<InicioSesionScreen> {
                       );
                     },
                     child: const Text(
-                      "Login",
+                      "Registrar",
                       style: TextStyle(
                           color: Color(0xFFB0263F),
                           fontSize: 14,
