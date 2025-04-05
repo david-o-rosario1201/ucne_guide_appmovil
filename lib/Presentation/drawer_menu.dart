@@ -3,6 +3,7 @@ import 'package:ucne_guide/Presentation/aboutus_screen.dart';
 import 'package:ucne_guide/Presentation/consulta_asignatura_screen.dart';
 import 'package:ucne_guide/Presentation/consulta_maestro_screen.dart';
 import 'package:ucne_guide/Presentation/home_screen.dart';
+import 'package:ucne_guide/Presentation/logout_dialog.dart';
 import 'package:ucne_guide/Presentation/perfil_estudiante_screen.dart';
 
 class DrawerMenu extends StatelessWidget {
@@ -76,7 +77,7 @@ class CustomDrawer extends StatelessWidget {
               );
             },
           ),
-          ListTile(
+          /*ListTile(
             leading: Icon(Icons.star, color: Colors.black),
             title: Text("Calificar Maestro"),
             onTap: () {
@@ -85,7 +86,7 @@ class CustomDrawer extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => ConsultaMaestroScreen()),
               );
             },
-          ),
+          ),*/
           ListTile(
             leading: Icon(Icons.person, color: Colors.black),
             title: Text("Perfil"),
@@ -100,7 +101,7 @@ class CustomDrawer extends StatelessWidget {
             leading: Icon(Icons.info, color: Colors.black),
             title: Text("Nosotros"),
             onTap: () {
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => AboutusScreen()),
               );
@@ -112,7 +113,7 @@ class CustomDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => ConsultaAsignaturaScreen()),
+                MaterialPageRoute(builder: (context) => LogoutDialog()),
               );
             },
           )

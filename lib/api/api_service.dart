@@ -169,6 +169,13 @@ class Api_Service{
     return maestrosMateria;
   }
 
+  //materias_maestro
+  Future<List<Materias>> getMateriasMaestro(int materiaId) async{
+    final materias = await getMaterias();
+    final materiasMaestro = materias.where((materia) => materia.materiaId == materiaId).toList();
+    return materiasMaestro;
+  }
+
   //estudiantes
   Future<Estudiantes> getEstudiante(int estudianteId) async{
     final endpoint = await http.get(Uri.parse('$baseUrl/estudiantes/$estudianteId'));
@@ -221,8 +228,6 @@ class Api_Service{
 
     return estudiante;
   }
-
-
 
   //Buscar matricula estudiante
   Future<String?> getEstudiantePorMatricula(String matricula) async {

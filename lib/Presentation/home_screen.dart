@@ -23,7 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadData();
-    //_deleteData();
   }
 
   Future<void> _loadData() async {
@@ -31,10 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       estudiante = username;
     });
-  }
-
-  Future<void> _deleteData() async {
-    await _prefsService.clearAllData();
   }
 
   @override
@@ -50,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: <Widget>[
                 SizedBox(height: 40),
                 Text(
-                  "Bienvenido, ${estudiante}",
+                  "Bienvenido/a, $estudiante",
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,

@@ -106,8 +106,8 @@ class _ConsultaAsignaturaScreenState extends State<ConsultaAsignaturaScreen> {
                                 ),
                               ),
                               child: Icon(
-                                Icons.remove_red_eye_outlined,
-                                color: Colors.white,
+                                  Icons.arrow_forward,
+                                  color: Colors.white
                               )
                             ),
                           ),

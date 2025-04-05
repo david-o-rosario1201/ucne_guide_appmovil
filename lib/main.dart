@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ucne_guide/Presentation/home_screen.dart';
 import 'package:ucne_guide/Presentation/inicio_sesion_screen.dart';
-import 'package:ucne_guide/Presentation/registro_screen.dart';
 
 import 'SharedPreferences/sharedPreferencesService.dart';
 
@@ -34,10 +33,10 @@ class _VerificarUsuarioLoggeadoState extends State<VerificarUsuarioLoggeado> {
     setState(() {
       estudiante = username;
     });
-    Navegar();
+    navegar();
   }
 
-  void Navegar() {
+  void navegar() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (estudiante == "No user saved") {
         Navigator.pushReplacement(
