@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:ucne_guide/Modelos/facultad.dart';
 import 'package:ucne_guide/Presentation/drawer_menu.dart';
+
+import '../Modelos/estudiantes.dart';
+import '../SharedPreferences/sharedPreferencesService.dart';
+import '../api/api_service.dart';
 
 class PerfilEstudianteScreen extends StatefulWidget {
   const PerfilEstudianteScreen({super.key});
@@ -9,30 +14,61 @@ class PerfilEstudianteScreen extends StatefulWidget {
 }
 
 class _PerfilEstudianteScreenState extends State<PerfilEstudianteScreen> {
+  final SharedPreferencesService _prefsService = SharedPreferencesService();
+  final Api_Service apiService = Api_Service();
+
+  late Future<void> _cargaDatos;
+
+  late Estudiantes estudiante;
+  late Facultad facultad;
+
+  @override
+  void initState() {
+    super.initState();
+    _cargaDatos = _loadData();
+  }
+
+  Future<void> _loadData() async {
+    String username = await _prefsService.loadUsername();
+    estudiante = await apiService.getEstudiantePorNombre(username);
+    facultad = await apiService.getFacultad(estudiante.carreraid);
+  }
+
   @override
   Widget build(BuildContext context) {
     return DrawerMenu(
       title: "Perfil de Estudiante",
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            Image(
-              image: AssetImage('assets/colega.png'),
-              width: 100,
-            ),
-            const SizedBox(height: 20),
-            const ProfileField(label: "Nombre", value: "Juan Pérez"),
-            const ProfileField(label: "Decanato", value: "Facultad de Ingeniería"),
-            const ProfileField(label: "Carrera", value: "Ingeniería en Sis. Computacionales"),
-            const ProfileField(label: "Fecha", value: "27/08/2020"),
-          ],
-        ),
+      body: FutureBuilder(
+        future: _cargaDatos,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          } else {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  Image(
+                    image: AssetImage('assets/colega.png'),
+                    width: 100,
+                  ),
+                  const SizedBox(height: 20),
+                  ProfileField(label: "Nombre", value: estudiante.nombre),
+                  ProfileField(label: "Facultad", value: facultad.nombre),
+                  ProfileField(label: "Matrícula", value: estudiante.matricula),
+                ],
+              ),
+            );
+          }
+        },
       ),
     );
   }
 }
+
 
 
 class ProfileField extends StatelessWidget {
