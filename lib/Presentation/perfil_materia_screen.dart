@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:ucne_guide/Modelos/comentarios.dart';
 import 'package:ucne_guide/Modelos/maestros.dart';
 import 'package:ucne_guide/Modelos/materias.dart';
+import 'package:ucne_guide/Presentation/perfil_maestro_screen.dart';
 import 'package:ucne_guide/api/api_service.dart';
-
 import '../Modelos/estudiantes.dart';
 import '../SharedPreferences/sharedPreferencesService.dart';
 
@@ -137,6 +137,7 @@ class _PerfilMateriaScreenState extends State<PerfilMateriaScreen> {
                           },
                         ),
                         ProfileField(label: "Código de Materia", value: materia.codigoMateria),
+                        ProfileField(label: "Descripción", value: materia.descripcion),
                         FutureBuilder<List<Maestros>>(
                           future: apiService.getMaestrosMateria(materia.materiaId),
                           builder: (context, snapshot) {
@@ -311,17 +312,17 @@ class TablaMaestros extends StatelessWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12), // Bordes redondeados
-            color: Colors.white, // Fondo de la tabla
+            borderRadius: BorderRadius.circular(12),
+            color: Colors.white,
           ),
-          clipBehavior: Clip.hardEdge, // Recorta el contenido para respetar el borderRadius
+          clipBehavior: Clip.hardEdge,
           child: Table(
             columnWidths: const {
               0: FlexColumnWidth(1),
               1: FlexColumnWidth(3),
             },
             children: [
-              // Encabezado con esquinas redondeadas en la parte superior
+              // Encabezado
               TableRow(
                 decoration: BoxDecoration(
                   color: Colors.blueAccent,
@@ -334,35 +335,58 @@ class TablaMaestros extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Text(
-                      "Docentes",
-                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                      "Docente",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),
                 ],
               ),
               // Filas dinámicas con colores alternos
-              ...maestros.asMap().entries.map(
-                    (entry) {
-                  int index = entry.key;
-                  Maestros maestro = entry.value;
-                  return TableRow(
-                    decoration: BoxDecoration(
-                      color: index.isEven ? Colors.grey.shade200 : Colors.white,
-                    ),
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Text(
-                          maestro.nombre,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 16),
-                        ),
+              ...maestros.asMap().entries.map((entry) {
+                int index = entry.key;
+                Maestros maestro = entry.value;
+
+                return TableRow(
+                  decoration: BoxDecoration(
+                    color: index.isEven ? Colors.grey.shade200 : Colors.white,
+                  ),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            maestro.nombre,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(width: 64.0),
+                          IconButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PerfilMaestroScreen(maestroId: maestro.maestroId),
+                                ),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.remove_red_eye_outlined,
+                              color: Colors.blueAccent,
+                              size: 28.0,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  );
-                },
-              ),
+                    ),
+                  ],
+                );
+              }),
             ],
           ),
         ),
