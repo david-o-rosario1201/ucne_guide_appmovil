@@ -77,7 +77,7 @@ class CustomDrawer extends StatelessWidget {
               );
             },
           ),
-          ListTile(
+          /*ListTile(
             leading: Icon(Icons.star, color: Colors.black),
             title: Text("Calificar Maestro"),
             onTap: () {
@@ -86,7 +86,7 @@ class CustomDrawer extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => ConsultaMaestroScreen()),
               );
             },
-          ),
+          ),*/
           ListTile(
             leading: Icon(Icons.person, color: Colors.black),
             title: Text("Perfil"),
@@ -101,7 +101,7 @@ class CustomDrawer extends StatelessWidget {
             leading: Icon(Icons.info, color: Colors.black),
             title: Text("Nosotros"),
             onTap: () {
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => AboutusScreen()),
               );
