@@ -60,7 +60,6 @@ class _PerfilMaestroScreenState extends State<PerfilMaestroScreen> {
                   ),
                   const SizedBox(height: 20),
                   ProfileField(label: "Maestro", value: maestro.nombre),
-                  ProfileField(label: "Comentario", value: maestro.comentario),
                   FutureBuilder<String>(
                     future: apiService.getMateriaDeMaestro(maestro),
                     builder: (context, snapshot) {
@@ -85,6 +84,7 @@ class _PerfilMaestroScreenState extends State<PerfilMaestroScreen> {
                       }
                     },
                   ),
+                  ProfileField(label: "Descripción", value: maestro.comentario),
                   FutureBuilder<List<Materias>>(
                     //crear un endpoint para esto
                     future: apiService.getMateriasMaestro(maestro.materiaId),
