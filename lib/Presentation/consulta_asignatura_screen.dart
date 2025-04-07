@@ -5,7 +5,10 @@ import 'package:ucne_guide/Presentation/perfil_materia_screen.dart';
 import 'package:ucne_guide/api/api_service.dart';
 
 class ConsultaAsignaturaScreen extends StatefulWidget {
-  const ConsultaAsignaturaScreen({super.key});
+
+  final int selectOption;
+
+  const ConsultaAsignaturaScreen({super.key, required this.selectOption});
 
   @override
   State<ConsultaAsignaturaScreen> createState() => _ConsultaAsignaturaScreenState();
@@ -16,10 +19,20 @@ class _ConsultaAsignaturaScreenState extends State<ConsultaAsignaturaScreen> {
   late Future<List<Materias>> futureMaterias;
   String searchQuery = "";
 
+  final Map<int, String> options = {
+    0: "Todas",
+    1: "Ingeniería",
+    2: "Salud",
+    3: "Educación",
+  };
+
+  late int selectedOptionId;
+
   @override
   void initState() {
     super.initState();
     futureMaterias = apiService.getMaterias();
+    selectedOptionId = widget.selectOption;
   }
 
   @override
@@ -58,6 +71,45 @@ class _ConsultaAsignaturaScreenState extends State<ConsultaAsignaturaScreen> {
               ),
             ),
             SizedBox(height: 10),
+
+
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: options.entries.map((entry) {
+                  final int optionId = entry.key;
+                  final String optionLabel = entry.value;
+                  final bool isSelected = optionId == selectedOptionId;
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                    child: ChoiceChip(
+                      label: Text(
+                        optionLabel,
+                        style: TextStyle(
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          color: isSelected ? Colors.white : Colors.blue[800],
+                        ),
+                      ),
+                      selected: isSelected,
+                      onSelected: (_) {
+                        setState(() {
+                          selectedOptionId = optionId;
+                        });
+                      },
+                      selectedColor: Color(0xFF1976D2),
+                      backgroundColor: Color(0xFFE3F2FD),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+
+
+            SizedBox(height: 10),
             Expanded(
               child: FutureBuilder<List<Materias>>(
                 future: futureMaterias,
@@ -69,8 +121,16 @@ class _ConsultaAsignaturaScreenState extends State<ConsultaAsignaturaScreen> {
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const Center(child: Text("No hay materias disponibles"));
                   } else {
-                    // Filtrar por búsqueda
-                    final filteredMaterias = snapshot.data!
+
+                    final materias = snapshot.data!;
+
+                    // Primero: filtrar por facultad
+                    final filtradasPorFacultad = selectedOptionId == 0
+                        ? materias
+                        : materias.where((m) => m.facultadId == selectedOptionId).toList();
+
+                    // Luego: filtrar por búsqueda
+                    final filteredMaterias = filtradasPorFacultad
                         .where((materia) => materia.nombre.toLowerCase().contains(searchQuery))
                         .toList();
 
