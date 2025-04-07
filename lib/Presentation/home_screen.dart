@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:ucne_guide/Presentation/consulta_asignatura_screen.dart';
 import 'package:ucne_guide/Presentation/consulta_maestro_screen.dart';
 import 'package:ucne_guide/Presentation/drawer_menu.dart';
+import 'package:ucne_guide/Presentation/home_screen_admin.dart';
+import 'package:ucne_guide/Presentation/home_screen_estudiante.dart';
 
 import '../SharedPreferences/sharedPreferencesService.dart';
 import '../api/api_service.dart';
+import 'inicio_sesion_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,10 +17,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final Api_Service apiService = Api_Service();
-  final SharedPreferencesService _prefsService = SharedPreferencesService();
 
-  String estudiante = "";
+  final SharedPreferencesService _prefsService = SharedPreferencesService();
+  String? estudiante = "";
 
   @override
   void initState() {
@@ -30,72 +32,32 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       estudiante = username;
     });
+    navegar();
+  }
+
+  void navegar() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (estudiante == "No user saved") {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => InicioSesionScreen()),
+        );
+      } else if(estudiante == "Admin"){
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreenAdmin()),
+        );
+      } else{
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreenEstudiante()),
+        );
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return DrawerMenu(
-      title: "HomeScreen",
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(height: 40),
-                Text(
-                  "Bienvenido/a, $estudiante",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueAccent,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 30),
-                _buildCard("Consulta de Materias", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ConsultaAsignaturaScreen()),
-                  );
-                }),
-                _buildCard("Consulta de Maestros", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ConsultaMaestroScreen()),
-                  );
-                }),
-                _buildCard("Calificar Maestro", () {})
-              ],
-            )
-          ],
-        )
-      ),
-    );
+    return const Placeholder();
   }
-}
-
-Widget _buildCard(String text, VoidCallback onTap) {
-  return Card(
-    color: Color(0xFFD1CCB6),
-    margin: EdgeInsets.symmetric(vertical: 10),
-    elevation: 4,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10),
-    ),
-    child: InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-        child: Center(
-          child: Text(
-            text,
-            style: TextStyle(fontSize: 16, color: Colors.black),
-          ),
-        ),
-      ),
-    ),
-  );
 }
