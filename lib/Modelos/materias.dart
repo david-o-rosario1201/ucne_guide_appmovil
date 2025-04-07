@@ -21,7 +21,7 @@ class Materias {
       nombre: utf8.decode(json['nombre'].toString().codeUnits),
       facultadId: json['facultadid'] ?? 0,
       codigoMateria: utf8.decode(json['codigomateria'].toString().codeUnits),
-      descripcion: utf8.decode(json['descripcion'].toString().codeUnits)
+      descripcion: utf8.decode(json['Descripcion'].toString().codeUnits)
     );
   }
 
@@ -31,7 +31,7 @@ class Materias {
       'nombre': nombre,
       'facultadid': facultadId,
       'codigoMateria': codigoMateria,
-      'descripcion': descripcion
+      'Descripcion': descripcion
     };
   }
 }
