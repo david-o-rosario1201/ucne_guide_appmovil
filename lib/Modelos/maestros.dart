@@ -18,7 +18,7 @@ class Maestros{
         maestroId: json['maestroid'],
         nombre: utf8.decode(json['nombre'].toString().codeUnits),
         materiaId: json['materiaid'] ?? 0,
-        comentario: utf8.decode(json['nombre'].toString().codeUnits)
+        comentario: utf8.decode(json['comentario'].toString().codeUnits)
     );
   }
 
