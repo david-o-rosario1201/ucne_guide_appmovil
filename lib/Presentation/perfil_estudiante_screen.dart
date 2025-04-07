@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ucne_guide/Modelos/facultad.dart';
 import 'package:ucne_guide/Presentation/drawer_menu.dart';
+import 'package:ucne_guide/Presentation/modificar_estudiante_dialog.dart';
 
 import '../Modelos/estudiantes.dart';
 import '../SharedPreferences/sharedPreferencesService.dart';
@@ -59,6 +60,27 @@ class _PerfilEstudianteScreenState extends State<PerfilEstudianteScreen> {
                   ProfileField(label: "Nombre", value: estudiante.nombre),
                   ProfileField(label: "Facultad", value: facultad.nombre),
                   ProfileField(label: "Matrícula", value: estudiante.matricula),
+
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => ModificarEstudianteDialog(estudiante: estudiante)),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFB0263F),
+                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      "Modificar",
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ),
                 ],
               ),
             );
@@ -96,7 +118,7 @@ class ProfileField extends StatelessWidget {
           ),
           child: Text(value, style: const TextStyle(fontSize: 16)),
         ),
-        const SizedBox(height: 15),
+        const SizedBox(height: 15)
       ],
     );
   }
