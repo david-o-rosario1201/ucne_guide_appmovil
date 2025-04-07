@@ -65,6 +65,16 @@ flutter:
     - assets/libros.png
     - assets/perfil.png
     - assets/colegio.png
+    - assets/book.png
+    - assets/dean.png
+    - assets/classroom.png
+    - assets/graduation-hat.png
+    - assets/graduation.png
+    - assets/group.png
+    - assets/comments.png
+    - assets/engineers.png
+    - assets/homework.png
+    - assets/healthcare.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
