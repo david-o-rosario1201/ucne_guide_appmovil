@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ucne_guide/Presentation/home_screen.dart';
+import 'package:ucne_guide/Presentation/home_screen_admin.dart';
 import 'package:ucne_guide/Presentation/inicio_sesion_screen.dart';
 
 import 'SharedPreferences/sharedPreferencesService.dart';
@@ -43,7 +44,7 @@ class _VerificarUsuarioLoggeadoState extends State<VerificarUsuarioLoggeado> {
           context,
           MaterialPageRoute(builder: (context) => InicioSesionScreen()),
         );
-      } else {
+      } else{
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen()),
