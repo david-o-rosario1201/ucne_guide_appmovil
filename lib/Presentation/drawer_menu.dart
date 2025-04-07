@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:ucne_guide/Presentation/aboutus_screen.dart';
+import 'package:ucne_guide/Presentation/comentarios_screen.dart';
 import 'package:ucne_guide/Presentation/consulta_asignatura_screen.dart';
+import 'package:ucne_guide/Presentation/consulta_estudiante_screen.dart';
 import 'package:ucne_guide/Presentation/consulta_maestro_screen.dart';
+import 'package:ucne_guide/Presentation/facultad_screen.dart';
 import 'package:ucne_guide/Presentation/home_screen.dart';
 import 'package:ucne_guide/Presentation/logout_dialog.dart';
 import 'package:ucne_guide/Presentation/perfil_estudiante_screen.dart';
@@ -58,18 +61,18 @@ class CustomDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.school, color: Colors.black),
-            title: Text("Consulta de Materias"),
+            leading: Icon(Icons.menu_book, color: Colors.black),
+            title: Text("Materias"),
             onTap: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => ConsultaAsignaturaScreen()),
+                MaterialPageRoute(builder: (context) => ConsultaAsignaturaScreen(selectOption: 0)),
               );
             },
           ),
           ListTile(
             leading: Icon(Icons.person_search, color: Colors.black),
-            title: Text("Consulta de Maestros"),
+            title: Text("Maestros"),
             onTap: () {
               Navigator.pushReplacement(
                 context,
@@ -77,18 +80,38 @@ class CustomDrawer extends StatelessWidget {
               );
             },
           ),
-          /*ListTile(
-            leading: Icon(Icons.star, color: Colors.black),
-            title: Text("Calificar Maestro"),
+          ListTile(
+            leading: Icon(Icons.apartment, color: Colors.black),
+            title: Text("Facultades"),
             onTap: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => ConsultaMaestroScreen()),
+                MaterialPageRoute(builder: (context) => FacultadScreen()),
               );
             },
-          ),*/
+          ),
           ListTile(
-            leading: Icon(Icons.person, color: Colors.black),
+            leading: Icon(Icons.people, color: Colors.black),
+            title: Text("Estudiantes"),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => ConsultaEstudianteScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.comment, color: Colors.black),
+            title: Text("Comentarios"),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => ComentariosScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.account_circle, color: Colors.black),
             title: Text("Perfil"),
             onTap: () {
               Navigator.pushReplacement(
@@ -98,7 +121,7 @@ class CustomDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.info, color: Colors.black),
+            leading: Icon(Icons.info_outline, color: Colors.black),
             title: Text("Nosotros"),
             onTap: () {
               Navigator.push(
