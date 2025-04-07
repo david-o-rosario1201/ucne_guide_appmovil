@@ -65,6 +65,12 @@ class Api_Service{
     return facultad.nombre;
   }
 
+  //facultad_estudiante
+  Future<String> getFacultadDeEstudiante(Estudiantes estudiante) async {
+    final facultad = await getFacultad(estudiante.carreraid);
+    return facultad.nombre;
+  }
+
 
   //materias
   Future<Materias> getMateria(int materiaId) async{
@@ -227,6 +233,12 @@ class Api_Service{
     );
 
     return estudiante;
+  }
+
+  //Buscar nombre del estudiante
+  Future<String> getNombreEstudiante(int estudianteId) async {
+    final estudiante = await getEstudiante(estudianteId);
+    return estudiante.nombre;
   }
 
   //Buscar matricula estudiante
